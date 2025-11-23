@@ -2,7 +2,7 @@ import Home from "./Page/Home"
 
 const App = () => {
   return (
-    <div>
+    <div className="min-h-screen">
       <Home />
     </div>
   )

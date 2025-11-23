@@ -3,6 +3,7 @@ import User from "../Database/DataSchema.js"
 
 const router = express.Router()
 
+// CREATE
 router.post("/", async (req, res) => {
     try {
         const { name, email, age, role } = req.body
@@ -22,35 +23,41 @@ router.post("/", async (req, res) => {
     }
 })
 
+// READ ALL + SEARCH
 router.get("/", async (req, res) => {
     try {
-        const search = req.params.search || ""
+        const search = req.query.search || ""
 
-        const user = await User.find({
-            name: {$regex: search, $options: "i"}
+        const users = await User.find({
+            name: { $regex: search, $options: "i" }
         })
 
-        res.status(200).json(user)
+        res.status(200).json({
+            message: "Users fetched successfully",
+            data: users
+        })
     } catch (err) {
         res.status(500).json({
-            message: "Error in fetching the user",
+            message: "Error in fetching the users",
             error: err
         })
     }
 })
 
+// READ BY ID
 router.get("/:id", async (req, res) => {
     try {
         const { id } = req.params
         const user  = await User.findById(id)
         
         if(!user) {
-            return res.status(404).json({
-                message: "User not found"
-            })
+            return res.status(404).json({ message: "User not found" })
         }
 
-        res.status(200).json(user)
+        res.status(200).json({
+            message: "User fetched successfully",
+            data: user
+        })
     } catch (err) {
         res.status(500).json({
             message: "Error in fetching the single user",
@@ -59,6 +66,7 @@ router.get("/:id", async (req, res) => {
     }
 })
 
+// UPDATE
 router.put("/:id", async (req, res) => {
     try {
         const { id } = req.params
@@ -71,9 +79,7 @@ router.put("/:id", async (req, res) => {
         )
 
         if(!updatedUser) {
-            return res.status(404).json({
-                message: "User not found"
-            })
+            return res.status(404).json({ message: "User not found" })
         }
 
         res.status(200).json({
@@ -88,14 +94,13 @@ router.put("/:id", async (req, res) => {
     }
 })
 
+// DELETE
 router.delete("/:id", async (req, res) => {
     try {
         const deletedUser = await User.findByIdAndDelete(req.params.id)
 
         if(!deletedUser) {
-            return res.status(404).json({
-                message: "User not found"
-            })
+            return res.status(404).json({ message: "User not found" })
         }
 
         res.status(200).json({
